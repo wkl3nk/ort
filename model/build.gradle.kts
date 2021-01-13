@@ -22,6 +22,7 @@ import org.ossreviewtoolkit.gradle.*
 
 val hopliteVersion: String by project
 val jacksonVersion: String by project
+val mockkVersion: String by project
 val semverVersion: String by project
 
 plugins {
@@ -44,6 +45,8 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
     implementation("com.vdurmont:semver4j:$semverVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
 tasks.withType<Jar>().configureEach {
