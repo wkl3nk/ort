@@ -331,7 +331,6 @@ class ExperimentalScanner(
             val summary = ScanSummary(
                 startTime = Instant.now(),
                 endTime = Instant.now(),
-                packageVerificationCode = "",
                 licenseFindings = sortedSetOf(),
                 copyrightFindings = sortedSetOf(),
                 issues = listOf(
@@ -382,8 +381,7 @@ fun ScanResult.toNestedProvenanceScanResult(nestedProvenance: NestedProvenance):
 
     val provenances = nestedProvenance.getProvenances()
     val scanResultsByProvenance = provenances.associateWith { provenance ->
-        // TODO: Find a solution for the incorrect packageVerificationCode and for how to associate issues to the
-        //       correct scan result.
+        // TODO: Find a solution for how to associate issues to the correct scan result.
         listOf(
             copy(
                 summary = summary.copy(

@@ -102,7 +102,6 @@ abstract class AbstractStorageFunTest : WordSpec() {
     private val scanSummaryWithFiles = ScanSummary(
         startTime = Instant.EPOCH + Duration.ofMinutes(1),
         endTime = Instant.EPOCH + Duration.ofMinutes(2),
-        packageVerificationCode = "packageVerificationCode",
         licenseFindings = sortedSetOf(
             LicenseFinding("license-1.1", DUMMY_TEXT_LOCATION),
             LicenseFinding("license-1.2", DUMMY_TEXT_LOCATION)

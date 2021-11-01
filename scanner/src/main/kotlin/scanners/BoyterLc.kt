@@ -48,7 +48,6 @@ import org.ossreviewtoolkit.utils.core.ProcessCapture
 import org.ossreviewtoolkit.utils.core.createOrtTempDir
 import org.ossreviewtoolkit.utils.core.log
 import org.ossreviewtoolkit.utils.core.unpackZip
-import org.ossreviewtoolkit.utils.spdx.calculatePackageVerificationCode
 
 class BoyterLc(
     name: String,
@@ -165,7 +164,6 @@ class BoyterLc(
         return ScanSummary(
             startTime = startTime,
             endTime = endTime,
-            packageVerificationCode = calculatePackageVerificationCode(scanPath),
             licenseFindings = licenseFindings,
             copyrightFindings = sortedSetOf(),
             issues = mutableListOf()

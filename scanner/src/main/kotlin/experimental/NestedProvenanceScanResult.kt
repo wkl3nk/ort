@@ -85,7 +85,6 @@ data class NestedProvenanceScanResult(
                 summary = ScanSummary(
                     startTime = startTime,
                     endTime = endTime,
-                    packageVerificationCode = "",
                     licenseFindings = licenseFindings,
                     copyrightFindings = copyrightFindings,
                     issues = issues

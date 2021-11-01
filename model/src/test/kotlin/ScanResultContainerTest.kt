@@ -60,7 +60,6 @@ class ScanResultContainerTest : WordSpec() {
     private val scanSummary1 = ScanSummary(
         scannerStartTime1,
         scannerEndTime1,
-        "packageVerificationCode",
         sortedSetOf(
             LicenseFinding(
                 "license-1.1",
@@ -86,7 +85,6 @@ class ScanResultContainerTest : WordSpec() {
     private val scanSummary2 = ScanSummary(
         scannerStartTime2,
         scannerEndTime2,
-        "packageVerificationCode",
         sortedSetOf(
             LicenseFinding(
                 "license-2.1",

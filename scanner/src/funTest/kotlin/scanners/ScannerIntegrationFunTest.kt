@@ -36,7 +36,6 @@ import org.ossreviewtoolkit.scanner.AbstractScannerFactory
 import org.ossreviewtoolkit.scanner.LocalScanner
 import org.ossreviewtoolkit.scanner.ScanResultsStorage
 import org.ossreviewtoolkit.scanner.scanOrtResult
-import org.ossreviewtoolkit.utils.spdx.calculatePackageVerificationCode
 import org.ossreviewtoolkit.utils.test.createTestTempDir
 import org.ossreviewtoolkit.utils.test.patchActualResult
 import org.ossreviewtoolkit.utils.test.patchExpectedResult
@@ -90,7 +89,6 @@ class ScannerIntegrationFunTest : StringSpec() {
             return ScanSummary(
                 startTime = startTime,
                 endTime = endTime,
-                packageVerificationCode = calculatePackageVerificationCode(path),
                 licenseFindings = sortedSetOf(),
                 copyrightFindings = sortedSetOf(),
                 issues = mutableListOf()

@@ -60,6 +60,10 @@ object SpdxDocumentModelMapper {
         val creationInfoComment: String
     )
 
+    fun getPackageVerificationCode(result: ScanResult?): SpdxPackageVerificationCode {
+
+    }
+
     fun map(
         ortResult: OrtResult,
         licenseInfoResolver: LicenseInfoResolver,
@@ -121,7 +125,7 @@ object SpdxDocumentModelMapper {
                     downloadLocation = pkg.vcsProcessed.toSpdxDownloadLocation(provenance?.resolvedRevision),
                     licenseConcluded = SpdxConstants.NOASSERTION,
                     licenseDeclared = SpdxConstants.NOASSERTION,
-                    packageVerificationCode = vcsScanResult?.toSpdxPackageVerificationCode()
+                    packageVerificationCode = getPackageVerificationCode(vcsScanResult)
                 )
 
                 val vcsPackageRelationShip = SpdxRelationship(
@@ -145,7 +149,7 @@ object SpdxDocumentModelMapper {
                     downloadLocation = curatedPackage.pkg.sourceArtifact.url.nullOrBlankToSpdxNone(),
                     licenseConcluded = SpdxConstants.NOASSERTION,
                     licenseDeclared = SpdxConstants.NOASSERTION,
-                    packageVerificationCode = sourceArtifactScanResult?.toSpdxPackageVerificationCode()
+                    packageVerificationCode = getPackageVerificationCode(sourceArtifactScanResult)
                 )
 
                 val sourceArtifactPackageRelationship = SpdxRelationship(
@@ -224,12 +228,6 @@ private fun ProcessedDeclaredLicense.toSpdxDeclaredLicense(): String =
     }
 
 private fun String?.nullOrBlankToSpdxNone(): String = if (isNullOrBlank()) SpdxConstants.NONE else this
-
-private fun ScanResult.toSpdxPackageVerificationCode(): SpdxPackageVerificationCode =
-    SpdxPackageVerificationCode(
-        packageVerificationCodeExcludedFiles = emptyList(),
-        packageVerificationCodeValue = summary.packageVerificationCode
-    )
 
 private fun SpdxDocument.addExtractedLicenseInfo(licenseTextProvider: LicenseTextProvider): SpdxDocument {
     val nonSpdxLicenses = packages.flatMapTo(mutableSetOf()) {

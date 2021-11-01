@@ -295,7 +295,6 @@ abstract class LocalScanner(
             summary = ScanSummary(
                 startTime = now,
                 endTime = now,
-                packageVerificationCode = "",
                 licenseFindings = sortedSetOf(),
                 copyrightFindings = sortedSetOf(),
                 issues = listOf(issue)
@@ -372,7 +371,6 @@ abstract class LocalScanner(
                 ScanSummary(
                     startTime = now,
                     endTime = now,
-                    packageVerificationCode = "",
                     licenseFindings = sortedSetOf(),
                     copyrightFindings = sortedSetOf(),
                     issues = listOf(
@@ -477,7 +475,6 @@ abstract class LocalScanner(
             ScanSummary(
                 startTime = now,
                 endTime = now,
-                packageVerificationCode = "",
                 licenseFindings = sortedSetOf(),
                 copyrightFindings = sortedSetOf(),
                 issues = listOf(

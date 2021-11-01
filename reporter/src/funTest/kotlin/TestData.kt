@@ -222,7 +222,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "MIT",
@@ -245,7 +244,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(),
                             copyrightFindings = sortedSetOf()
                         )
@@ -258,7 +256,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "MIT",
@@ -286,7 +283,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "MIT",
@@ -322,7 +318,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "MIT",
@@ -366,7 +361,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "MIT",
@@ -402,7 +396,6 @@ val ORT_RESULT = OrtResult(
                         summary = ScanSummary(
                             startTime = Instant.EPOCH,
                             endTime = Instant.EPOCH,
-                            packageVerificationCode = "",
                             licenseFindings = sortedSetOf(
                                 LicenseFinding(
                                     license = "BSD-3-Clause",

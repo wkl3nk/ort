@@ -390,7 +390,6 @@ internal class EvaluatedModelMapper(private val input: ReporterInput) {
             scanner = result.scanner,
             startTime = result.summary.startTime,
             endTime = result.summary.endTime,
-            packageVerificationCode = result.summary.packageVerificationCode,
             issues = issues
         )
 

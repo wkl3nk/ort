@@ -37,7 +37,6 @@ import org.ossreviewtoolkit.model.TextLocation
 import org.ossreviewtoolkit.utils.core.textValueOrEmpty
 import org.ossreviewtoolkit.utils.spdx.SpdxConstants
 import org.ossreviewtoolkit.utils.spdx.SpdxConstants.LICENSE_REF_PREFIX
-import org.ossreviewtoolkit.utils.spdx.calculatePackageVerificationCode
 
 private data class LicenseExpression(
     val expression: String,
@@ -71,41 +70,18 @@ private val UNKNOWN_LICENSE_KEYS = listOf(
 )
 
 /**
- * Generate a summary from the given raw ScanCode [result], using [startTime] and [endTime] metadata. From the
- * [scanPath] the package verification code is generated. If [parseExpressions] is true, license findings are preferably
- * parsed as license expressions.
+ * Generate a summary from the given raw ScanCode [result], using [startTime] and [endTime]. If [parseExpressions] is
+ * true, license findings are preferably parsed as license expressions.
  */
 internal fun generateSummary(
     startTime: Instant,
     endTime: Instant,
-    scanPath: File,
-    result: JsonNode,
-    parseExpressions: Boolean = true
-) =
-    generateSummary(
-        startTime,
-        endTime,
-        calculatePackageVerificationCode(scanPath),
-        result,
-        parseExpressions
-    )
-
-/**
- * Generate a summary from the given raw ScanCode [result], using [startTime], [endTime], and [verificationCode]
- * metadata. This variant can be used if the result is not read from a local file. If [parseExpressions] is true,
- * license findings are preferably parsed as license expressions.
- */
-internal fun generateSummary(
-    startTime: Instant,
-    endTime: Instant,
-    verificationCode: String,
     result: JsonNode,
     parseExpressions: Boolean = true
 ) =
     ScanSummary(
         startTime = startTime,
         endTime = endTime,
-        packageVerificationCode = verificationCode,
         licenseFindings = getLicenseFindings(result, parseExpressions).toSortedSet(),
         copyrightFindings = getCopyrightFindings(result).toSortedSet(),
         issues = getIssues(result)

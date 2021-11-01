@@ -84,7 +84,6 @@ private fun createScanResult(resultCount: Int): ScanResult {
     val summary = ScanSummary(
         startTime = Instant.now(),
         endTime = Instant.now(),
-        packageVerificationCode = "test$resultCount",
         licenseFindings = licenseFindings.toSortedSet(),
         copyrightFindings = sortedSetOf()
     )

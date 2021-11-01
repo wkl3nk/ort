@@ -37,7 +37,5 @@ data class EvaluatedScanResult(
     val startTime: Instant,
     val endTime: Instant,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    val packageVerificationCode: String,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     val issues: List<EvaluatedOrtIssue>
 )

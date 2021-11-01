@@ -155,7 +155,6 @@ val scanResults = listOf(
             summary = ScanSummary(
                 startTime = Instant.EPOCH,
                 endTime = Instant.EPOCH,
-                packageVerificationCode = "",
                 licenseFindings = licenseFindings,
                 copyrightFindings = sortedSetOf()
             )

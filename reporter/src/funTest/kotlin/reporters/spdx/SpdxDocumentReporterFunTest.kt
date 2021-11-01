@@ -292,7 +292,6 @@ private fun createOrtResult(): OrtResult {
                             summary = ScanSummary(
                                 startTime = Instant.MIN,
                                 endTime = Instant.MIN,
-                                packageVerificationCode = "0000000000000000000000000000000000000000",
                                 licenseFindings = sortedSetOf(
                                     LicenseFinding(
                                         license = "Apache-2.0",
@@ -325,7 +324,6 @@ private fun createOrtResult(): OrtResult {
                             summary = ScanSummary(
                                 startTime = Instant.MIN,
                                 endTime = Instant.MIN,
-                                packageVerificationCode = "0000000000000000000000000000000000000000",
                                 licenseFindings = sortedSetOf(
                                     LicenseFinding(
                                         license = "BSD-2-Clause",
