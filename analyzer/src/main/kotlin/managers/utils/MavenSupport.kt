@@ -544,7 +544,7 @@ class MavenSupport(private val workspaceReader: WorkspaceReader) {
             if (artifactDownload.exception == null) {
                 log.debug { "Found '$artifact' in '$repository'." }
 
-                val checksums = repositoryLayout.getChecksums(artifact, false, remoteLocation)
+                val checksums = repositoryLayout.getChecksumLocations(artifact, false, remoteLocation)
                 log.debug { "Checksums: $checksums" }
 
                 // TODO: Could store multiple checksums in model instead of only the first.
@@ -567,7 +567,13 @@ class MavenSupport(private val workspaceReader: WorkspaceReader) {
                 }
 
                 val downloadUrl = "${repository.url.trimEnd('/')}/$remoteLocation"
-                val hash = if (actualChecksum.isBlank()) Hash.NONE else Hash.create(actualChecksum, checksum.algorithm)
+
+                val hash = if (actualChecksum.isBlank()) {
+                    Hash.NONE
+                } else {
+                    Hash.create(actualChecksum, checksum.checksumAlgorithmFactory.name)
+                }
+
                 return RemoteArtifact(downloadUrl, hash).also {
                     log.debug { "Writing remote artifact for '$artifact' to disk cache." }
                     remoteArtifactCache.write(artifact.toString(), yamlMapper.writeValueAsString(it))
