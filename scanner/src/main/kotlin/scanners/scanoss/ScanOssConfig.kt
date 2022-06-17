@@ -31,7 +31,10 @@ internal data class ScanOssConfig(
     val apiUrl: String,
 
     /** API Key required to authenticate with the ScanOSS server. */
-    val apiKey: String
+    val apiKey: String,
+
+    /** A list of extensions for files (without the dot) to be ignored during the scan. */
+    val ignoredFileExtensions: List<String>
 ) {
     companion object {
         /** Name of the configuration property for the API URL. */
@@ -40,6 +43,9 @@ internal data class ScanOssConfig(
         /** Name of the configuration property for the API key. */
         const val API_KEY_PROPERTY = "apiKey"
 
+        /** Name of the configuration property for the list of ignored file extensions. */
+        const val IGNORED_FILE_EXTENSIONS = "ignoredFileExtensions"
+
         fun create(scannerConfig: ScannerConfiguration): ScanOssConfig {
             val scanOssIdScannerOptions = scannerConfig.options?.get("ScanOss")
 
@@ -47,8 +53,9 @@ internal data class ScanOssConfig(
 
             val apiURL = scanOssIdScannerOptions[API_URL_PROPERTY] ?: "https://osskb.org/api/"
             val apiKey = scanOssIdScannerOptions[API_KEY_PROPERTY].orEmpty()
+            val ignoredFileExtensions = scanOssIdScannerOptions[IGNORED_FILE_EXTENSIONS]?.split(',').orEmpty()
 
-            return ScanOssConfig(apiURL, apiKey)
+            return ScanOssConfig(apiURL, apiKey, ignoredFileExtensions)
         }
     }
 }
