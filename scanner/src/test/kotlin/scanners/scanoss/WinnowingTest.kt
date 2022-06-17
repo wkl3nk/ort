@@ -19,18 +19,23 @@
 
 package org.ossreviewtoolkit.scanner.scanners.scanoss
 
-import com.scanoss.scanner.Winnowing
-
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 import java.io.File
 
-private fun calculate(file: File) = Winnowing.wfpForFile(file.name, file.path)
-
 class WinnowingTest : StringSpec({
+    "The hash calculation should detect binary files" {
+        Winnowing().calculateHash(File("../gradle/wrapper/gradle-wrapper.jar")).isBinary shouldBe true
+        Winnowing().calculateHash(File("../logos/ort.png")).isBinary shouldBe true
+
+        Winnowing().calculateHash(File("../LICENSES/Apache-2.0.txt")).isBinary shouldBe false
+        Winnowing().calculateHash(File("../LICENSES/CC-BY-3.0.txt")).isBinary shouldBe false
+        Winnowing().calculateHash(File("../LICENSES/CC0-1.0.txt")).isBinary shouldBe false
+    }
+
     "The fingerprint should be calculated correctly for Apache-2.0.txt" {
-        calculate(File("../LICENSES/Apache-2.0.txt")) shouldBe """
+        Winnowing().calculateFingerprint(File("../LICENSES/Apache-2.0.txt")) shouldBe """
             file=e3fc50a88d0a364313df4b21ef20c29e,11357,Apache-2.0.txt
             5=33193f1b,1716113f,0c557e09
             9=643a45ae,2ae8e84a,bacd17ac
@@ -179,7 +184,7 @@ class WinnowingTest : StringSpec({
     }
 
     "The fingerprint should be calculated correctly for CC-BY-3.0.txt" {
-        calculate(File("../LICENSES/CC-BY-3.0.txt")) shouldBe """
+        Winnowing().calculateFingerprint(File("../LICENSES/CC-BY-3.0.txt")) shouldBe """
             file=6dffb34dbf23fffe10cc646d9c030e14,19467,CC-BY-3.0.txt
             5=996e9d8b,1a6dc238
             6=70a3753f,14d9bf35,0dbf4b11,d58971b7,86fbc9f3
@@ -436,7 +441,7 @@ class WinnowingTest : StringSpec({
     }
 
     "The fingerprint should be calculated correctly for CC0-1.0.txt" {
-        calculate(File("../LICENSES/CC0-1.0.txt")) shouldBe """
+        Winnowing().calculateFingerprint(File("../LICENSES/CC0-1.0.txt")) shouldBe """
             file=65d3616852dbf7b1a6d4b53b00626032,7048,CC0-1.0.txt
             5=c44c7323
             6=14d9bf35
