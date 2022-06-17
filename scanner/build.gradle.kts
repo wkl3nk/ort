@@ -57,7 +57,6 @@ dependencies {
     implementation(libs.kotlinxCoroutines)
     implementation(libs.postgres)
     implementation(libs.retrofitConverterJackson)
-    implementation(libs.scanoss)
     implementation(libs.sw360Client)
 
     testImplementation(libs.kotlinxSerialization)
@@ -73,7 +72,7 @@ buildConfig {
     buildConfigField("String", "BOYTER_LC_VERSION", "\"$boyterLcVersion\"")
     buildConfigField("String", "LICENSEE_VERSION", "\"$licenseeVersion\"")
     buildConfigField("String", "SCANCODE_VERSION", "\"$scancodeVersion\"")
-    buildConfigField("String", "SCANOSS_VERSION", "\"${libs.versions.scanoss.get()}\"")
+    buildConfigField("String", "SCANOSS_VERSION", "\"1.0\"")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

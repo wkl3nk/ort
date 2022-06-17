@@ -20,8 +20,6 @@
 
 package org.ossreviewtoolkit.scanner.scanners.scanoss
 
-import com.scanoss.scanner.Winnowing
-
 import java.io.File
 import java.time.Instant
 import java.util.UUID
