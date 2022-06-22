@@ -141,7 +141,7 @@ class GoMod(
 
         var graph = Graph()
 
-        for (line in run("mod", "graph", workingDir = projectDir).requireSuccess().stdout.lines()) {
+        for (line in run("mod", "graph", workingDir = projectDir)).stdout.lines()) {
             if (line.isBlank()) continue
 
             val columns = line.split(' ')
@@ -192,7 +192,7 @@ class GoMod(
             // Use the ´-m´ switch to use module names because the graph also uses module names, not package names.
             // This fixes the accidental dropping of some modules.
             vendorModuleNames += parseWhyOutput(
-                run(projectDir, "mod", "why", "-m", "-vendor", *moduleNames).requireSuccess().stdout
+                run(projectDir, "mod", "why", "-m", "-vendor", *moduleNames).stdout
             )
         }
 

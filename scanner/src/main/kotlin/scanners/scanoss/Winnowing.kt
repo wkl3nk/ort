@@ -22,6 +22,8 @@ package org.ossreviewtoolkit.scanner.scanners.scanoss
 import java.io.File
 import java.security.MessageDigest
 import java.util.Locale
+import java.util.zip.CRC32C
+import java.util.zip.Checksum
 
 private val SPACE_CHAR: Byte = 0x20
 private val TEXT_CONTROL_CHARS = byteArrayOf(
@@ -35,6 +37,7 @@ private fun normalizeLine(line: String): List<Char> =
 
 class Winnowing(
     private val digest: MessageDigest = MessageDigest.getInstance("MD5"),
+    private val checksum: Checksum = CRC32C(),
     private val gramSize: Int = 30,
     private val windowSize: Int = 64
 ) {
@@ -77,6 +80,13 @@ class Winnowing(
         )
     }
 
+    fun calculateChecksum(text: String): Long =
+        with(checksum) {
+            reset()
+            update(text.toByteArray())
+            value
+        }
+
     fun calculateFingerprint(file: File): String =
         buildString {
             val hashResult = calculateHash(file)
@@ -84,14 +94,24 @@ class Winnowing(
             if (hashResult.isBinary) return@buildString
 
             file.useLines { lines ->
-                lines.forEachIndexed { index, line ->
-                    val normalizedLine = normalizeLine(line)
-                    if (normalizedLine.size < gramSize) return@forEachIndexed
+                var normalizedText = mutableListOf<Char>()
+                val window = mutableListOf<Long>()
 
-                    //val windows = normalizedLine.windowed(windowSize, gramSize)
-                    //windows.forEach { _ ->
-                    appendLine("${index + 1},")
-                    //}
+                lines.forEachIndexed { index, line ->
+                    normalizedText += normalizeLine(line)
+                    if (normalizedText.size < gramSize) return@forEachIndexed
+
+                    val gram = String(normalizedText.subList(0, gramSize).toCharArray())
+                    normalizedText.removeAt(0)
+                    window += calculateChecksum(gram)
+
+                    if (window.size < windowSize) return@forEachIndexed
+
+                    val minChecksum = window.min()
+                    val hexChecksum = String.format(Locale.ROOT, "%02x", minChecksum)
+                    append("${index + 1},$hexChecksum")
+                    val windows = normalizedLine.windowed(windowSize, step = 1, partialWindows = true)
+                    appendLine(windows.joinToString(","))
                 }
             }
         }
