@@ -36,7 +36,6 @@ import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.utils.common.Os
 import org.ossreviewtoolkit.utils.common.ProcessCapture
 import org.ossreviewtoolkit.utils.ort.normalizeVcsUrl
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 import org.ossreviewtoolkit.utils.test.USER_DIR
 import org.ossreviewtoolkit.utils.test.patchActualResult
 import org.ossreviewtoolkit.utils.test.patchExpectedResult
@@ -46,8 +45,6 @@ class GradleFunTest : StringSpec() {
     private val vcsDir = VersionControlSystem.forDirectory(projectDir)!!
     private val vcsUrl = vcsDir.getRemoteUrl()
     private val vcsRevision = vcsDir.getRevision()
-
-    private val isJava9OrAbove = System.getProperty("java.version").split('.').first().toInt() >= 9
 
     override suspend fun afterSpec(spec: Spec) {
         // Reset the Gradle wrapper files to the committed state.
@@ -124,44 +121,11 @@ class GradleFunTest : StringSpec() {
             result.toYaml() shouldBe expectedResult
         }
 
-        // Disabled as it causes hangs and memory issues on CI.
-        "Is compatible with Gradle >= 2.14".config(tags = setOf(ExpensiveTag), enabled = false) {
-            // See https://blog.gradle.org/java-9-support-update.
-            val gradleVersionsThatSupportJava9 = arrayOf(
-                row("4.6", ""),
-                row("4.5.1", "-3.4"),
-                row("4.5", "-3.4"),
-                row("4.4.1", "-3.4"),
-                row("4.4", "-3.4"),
-                row("4.3.1", "-3.4"),
-                row("4.3", "-3.4"),
-                row("4.2.1", "-3.4")
+        "Is compatible with Gradle < 7".config {
+            val gradleVersions = arrayOf(
+                row("6.9.3", ""),
+                row("5.6.9", "")
             )
-
-            val gradleVersionsThatDoNotSupportJava9 = arrayOf(
-                row("4.2", "-3.4"),
-                row("4.1", "-3.4"),
-                row("4.0.2", "-3.4"),
-                row("4.0.1", "-3.4"),
-                row("4.0", "-3.4"),
-                row("3.5.1", "-3.4"),
-                row("3.5", "-3.4"),
-                row("3.4.1", "-3.4"),
-                row("3.4", "-3.4"),
-                row("3.3", "-2.14"),
-                row("3.2.1", "-2.14"),
-                row("3.2", "-2.14"),
-                row("3.1", "-2.14"),
-                row("3.0", "-2.14"),
-                row("2.14.1", "-2.14"),
-                row("2.14", "-2.14")
-            )
-
-            val gradleVersions = if (isJava9OrAbove) {
-                gradleVersionsThatSupportJava9
-            } else {
-                gradleVersionsThatSupportJava9 + gradleVersionsThatDoNotSupportJava9
-            }
 
             val gradleVersionTable = table(headers("version", "resultsFileSuffix"), *gradleVersions)
 
