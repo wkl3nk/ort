@@ -38,6 +38,7 @@ import org.gradle.tooling.internal.consumer.DefaultGradleConnector
 import org.ossreviewtoolkit.analyzer.AbstractPackageManagerFactory
 import org.ossreviewtoolkit.analyzer.PackageManager
 import org.ossreviewtoolkit.downloader.VersionControlSystem
+import org.ossreviewtoolkit.model.Hash
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.Package
@@ -53,7 +54,9 @@ import org.ossreviewtoolkit.model.config.AnalyzerConfiguration
 import org.ossreviewtoolkit.model.config.PackageManagerConfiguration
 import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.model.createAndLogIssue
+import org.ossreviewtoolkit.utils.common.splitOnWhitespace
 import org.ossreviewtoolkit.utils.ort.DeclaredLicenseProcessor
+import org.ossreviewtoolkit.utils.ort.OkHttpClientHelper
 import org.ossreviewtoolkit.utils.ort.createOrtTempFile
 import org.ossreviewtoolkit.utils.spdx.SpdxOperator
 
@@ -170,19 +173,20 @@ class GradleInspector(
             model
         }
 
-    private fun Collection<OrtDependency>.toPackageRefs(): SortedSet<PackageReference> =
+    private fun Collection<OrtDependency>.toPackageRefs(
+        pomFiles: MutableMap<Identifier, String>
+    ): SortedSet<PackageReference> =
         mapTo(sortedSetOf()) { dep ->
-            val (type, linkage) = if (dep.localPath != null) {
-                "Gradle" to PackageLinkage.PROJECT_DYNAMIC
+            val (id, linkage) = if (dep.localPath != null) {
+                val id = Identifier("Gradle", dep.groupId, dep.artifactId, dep.version)
+                id to PackageLinkage.PROJECT_DYNAMIC
             } else {
-                "Maven" to PackageLinkage.DYNAMIC
+                val id = Identifier("Maven", dep.groupId, dep.artifactId, dep.version)
+                dep.pomFile?.also { pomFiles.putIfAbsent(id, it) }
+                id to PackageLinkage.DYNAMIC
             }
 
-            PackageReference(
-                id = Identifier(type, dep.groupId, dep.artifactId, dep.version),
-                linkage = linkage,
-                dependencies = dep.dependencies.toPackageRefs()
-            )
+            PackageReference(id, linkage, dep.dependencies.toPackageRefs(pomFiles))
         }
 
     override fun resolveDependencies(definitionFile: File, labels: Map<String, String>): List<ProjectAnalyzerResult> {
@@ -220,10 +224,12 @@ class GradleInspector(
             version = dependencyTreeModel.version
         )
 
+        val remotePomFiles = mutableMapOf<Identifier, String>()
+
         val scopes = dependencyTreeModel.configurations.filterNot {
             excludes.isScopeExcluded(it.name)
         }.mapTo(sortedSetOf()) {
-            Scope(name = it.name, dependencies = it.dependencies.toPackageRefs())
+            Scope(name = it.name, dependencies = it.dependencies.toPackageRefs(remotePomFiles))
         }
 
         val project = Project(
@@ -237,9 +243,7 @@ class GradleInspector(
             scopeDependencies = scopes
         )
 
-        val packages = scopes.flatMapTo(mutableSetOf()) { scope ->
-            scope.collectDependencies { it.linkage !in PackageLinkage.PROJECT_LINKAGE }
-        }.mapTo(mutableSetOf()) { id ->
+        val packages = remotePomFiles.mapTo(mutableSetOf()) { (id, remotePomFile) ->
             val pomFile = findArtifact(id) ?: run {
                 issues += createAndLogIssue(
                     source = "Gradle",
@@ -272,6 +276,10 @@ class GradleInspector(
             val vcs = model.parseVcsInfo()
             val vcsProcessed = processPackageVcs(vcs, *vcsFallbackUrls)
 
+            val (binaryJarUrl, sourcesJarUrl) = remotePomFile.removeSuffix(".pom").let {
+                "$it.jar" to "$it-sources.jar"
+            }
+
             Package(
                 id = id,
                 authors = model.effectiveModel.parseAuthors(),
@@ -279,8 +287,8 @@ class GradleInspector(
                 declaredLicensesProcessed = processedLicenses,
                 description = model.effectiveModel.description.orEmpty(),
                 homepageUrl = homepageUrl.orEmpty(),
-                binaryArtifact = RemoteArtifact.EMPTY,
-                sourceArtifact = RemoteArtifact.EMPTY,
+                binaryArtifact = createRemoteArtifact(binaryJarUrl),
+                sourceArtifact = createRemoteArtifact(sourcesJarUrl),
                 vcs = vcs,
                 vcsProcessed = vcsProcessed
             )
@@ -298,3 +306,23 @@ class GradleInspector(
  */
 private fun findArtifact(id: Identifier, extension: String = "pom"): File? =
     MavenModelUtils.findArtifact(id, extension) ?: GradleCacheUtils.findArtifact(id, extension)
+
+/**
+ * Split the provided [checksum] by whitespace and return a [Hash] for the first element that matches the provided
+ * algorithm. If no element matches, return [Hash.NONE]. This works around the issue that Maven checksum files sometimes
+ * contain arbitrary strings before or after the actual checksum.
+ */
+private fun parseChecksum(checksum: String, algorithm: String) =
+    checksum.splitOnWhitespace().firstNotNullOfOrNull {
+        runCatching { Hash.create(it, algorithm) }.getOrNull()
+    } ?: Hash.NONE
+
+/**
+ * Create a [RemoteArtifact] for the given [url] and hash [algorithm]. The hash value is retrieved remotely.
+ */
+private fun createRemoteArtifact(url: String, algorithm: String = "sha1"): RemoteArtifact {
+    // TODO: How to handle authentication for private repositories here, or rely on Gradle for the download?
+    val checksum = OkHttpClientHelper.downloadText("$url.$algorithm").getOrElse { return RemoteArtifact.EMPTY }
+
+    return RemoteArtifact(url, parseChecksum(checksum, algorithm))
+}
