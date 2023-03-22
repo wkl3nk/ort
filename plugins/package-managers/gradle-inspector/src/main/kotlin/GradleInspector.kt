@@ -28,6 +28,8 @@ import java.util.SortedSet
 import java.util.concurrent.TimeUnit
 
 import org.apache.logging.log4j.kotlin.Logging
+import org.apache.maven.model.building.FileModelSource
+import org.apache.maven.model.resolution.UnresolvableModelException
 
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.events.ProgressListener
@@ -43,6 +45,7 @@ import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.PackageReference
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.ProjectAnalyzerResult
+import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.Scope
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.VcsInfo
@@ -50,7 +53,9 @@ import org.ossreviewtoolkit.model.config.AnalyzerConfiguration
 import org.ossreviewtoolkit.model.config.PackageManagerConfiguration
 import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.model.createAndLogIssue
+import org.ossreviewtoolkit.utils.ort.DeclaredLicenseProcessor
 import org.ossreviewtoolkit.utils.ort.createOrtTempFile
+import org.ossreviewtoolkit.utils.spdx.SpdxOperator
 
 private val GRADLE_BUILD_FILES = listOf("build.gradle", "build.gradle.kts")
 private val GRADLE_SETTINGS_FILES = listOf("settings.gradle", "settings.gradle.kts")
@@ -86,6 +91,16 @@ class GradleInspector(
             analyzerConfig: AnalyzerConfiguration,
             repoConfig: RepositoryConfiguration
         ) = GradleInspector(type, analysisRoot, analyzerConfig, repoConfig)
+    }
+
+    private val fileModelBuilder = FileModelBuilder { groupId, artifactId, version ->
+        val id = Identifier("Maven", groupId, artifactId, version)
+
+        val pomFile = findArtifact(id) ?: throw UnresolvableModelException(
+            "Unable to find the POM in the local Maven repository or Gradle cache", groupId, artifactId, version
+        )
+
+        FileModelSource(pomFile)
     }
 
     private fun extractInitScript(): File {
@@ -225,10 +240,61 @@ class GradleInspector(
         val packages = scopes.flatMapTo(mutableSetOf()) { scope ->
             scope.collectDependencies { it.linkage !in PackageLinkage.PROJECT_LINKAGE }
         }.mapTo(mutableSetOf()) { id ->
-            Package.EMPTY.copy(id = id)
+            val pomFile = findArtifact(id) ?: run {
+                issues += createAndLogIssue(
+                    source = "Gradle",
+                    message = "Unable to find the POM for '${id.toCoordinates()}' in the local Maven repository or " +
+                            "Gradle cache."
+                )
+
+                return@mapTo Package.EMPTY.copy(id = id)
+            }
+
+            val model = runCatching { fileModelBuilder.buildModel(pomFile) }.getOrElse {
+                issues += createAndLogIssue(
+                    source = "Gradle",
+                    message = "Unable to build the Maven model for '${id.toCoordinates()}': ${it.message}"
+                )
+
+                return@mapTo Package.EMPTY.copy(id = id)
+            }
+
+            val licenses = model.effectiveModel.parseLicenses()
+
+            // See http://maven.apache.org/ref/3.6.3/maven-model/maven.html#project saying: "If multiple licenses
+            // are listed, it is assumed that the user can select any of them, not that they must accept all."
+            val processedLicenses = DeclaredLicenseProcessor.process(licenses, operator = SpdxOperator.OR)
+
+            val browsableScmUrl = model.getOriginalScm()?.url
+            val homepageUrl = model.effectiveModel.url
+
+            val vcsFallbackUrls = listOfNotNull(browsableScmUrl, homepageUrl).toTypedArray()
+            val vcs = model.parseVcsInfo()
+            val vcsProcessed = processPackageVcs(vcs, *vcsFallbackUrls)
+
+            Package(
+                id = id,
+                authors = model.effectiveModel.parseAuthors(),
+                declaredLicenses = licenses,
+                declaredLicensesProcessed = processedLicenses,
+                description = model.effectiveModel.description.orEmpty(),
+                homepageUrl = homepageUrl.orEmpty(),
+                binaryArtifact = RemoteArtifact.EMPTY,
+                sourceArtifact = RemoteArtifact.EMPTY,
+                vcs = vcs,
+                vcsProcessed = vcsProcessed
+            )
         }
 
         val result = ProjectAnalyzerResult(project, packages, issues)
         return listOf(result)
     }
 }
+
+/**
+ * Search for the artifact matching the given [id] and [extension] in the local Maven repository and in the Gradle
+ * cache, as Gradle only downloads the artifact if it is not already present in the local Maven repository. Either
+ * return its [File] location, or null if no belonging POM can be found.
+ */
+private fun findArtifact(id: Identifier, extension: String = "pom"): File? =
+    MavenModelUtils.findArtifact(id, extension) ?: GradleCacheUtils.findArtifact(id, extension)
