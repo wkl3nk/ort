@@ -30,6 +30,8 @@ gradlePlugin {
 
 dependencies {
     implementation(project(":plugins:package-managers:gradle-model"))
+
+    implementation(libs.mavenModel)
 }
 
 tasks.register("fatJar", Jar::class) {
