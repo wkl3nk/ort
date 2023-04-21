@@ -208,7 +208,8 @@ class DependencyGraphBuilderTest : WordSpec({
 
         "deal with cycles in dependencies" {
             val scope = "CyclicScope"
-            val depCyc1 = createDependency("org.cyclic", "cyclic", "77.7")
+            val depFoo2 = createDependency("org.foo", "foo", "1.2.0")
+            val depCyc1 = createDependency("org.cyclic", "cyclic", "77.7", dependencies = listOf(depFoo2))
             val depFoo = createDependency("org.foo", "foo", "1.2.0", dependencies = listOf(depCyc1))
             val depCyc2 = createDependency("org.cyclic", "cyclic", "77.7", dependencies = listOf(depFoo))
 
