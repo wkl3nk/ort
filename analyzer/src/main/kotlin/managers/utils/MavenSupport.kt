@@ -20,6 +20,8 @@
 package org.ossreviewtoolkit.analyzer.managers.utils
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.mayakapps.kache.FileKache
+import com.mayakapps.kache.OkioFileKache
 
 import java.io.File
 import java.net.URI
@@ -86,7 +88,6 @@ import org.ossreviewtoolkit.model.VcsType
 import org.ossreviewtoolkit.model.toYaml
 import org.ossreviewtoolkit.model.utils.parseRepoManifestPath
 import org.ossreviewtoolkit.model.yamlMapper
-import org.ossreviewtoolkit.utils.common.DiskCache
 import org.ossreviewtoolkit.utils.common.collectMessages
 import org.ossreviewtoolkit.utils.common.gibibytes
 import org.ossreviewtoolkit.utils.common.searchUpwardsForSubdirectory
@@ -123,11 +124,14 @@ class MavenSupport(private val workspaceReader: WorkspaceReader) {
         private val SCM_REGEX = Regex("scm:(?<type>[^:@]+):(?<url>.+)")
         private val USER_HOST_REGEX = Regex("scm:(?<user>[^:@]+)@(?<host>[^:]+)[:/](?<path>.+)")
 
-        private val remoteArtifactCache = DiskCache(
-            directory = ortDataDirectory.resolve("cache/analyzer/maven/remote-artifacts"),
-            maxCacheSizeInBytes = 1.gibibytes,
-            maxCacheEntryAgeInSeconds = 6.hours.inWholeSeconds
-        )
+        private val remoteArtifactCache = FileKache(
+            directoryPath = ortDataDirectory.resolve("cache/analyzer/maven/remote-artifacts").path,
+            maxSize = 1.gibibytes
+            //maxCacheSizeInBytes = 1.gibibytes,
+            //maxCacheEntryAgeInSeconds = 6.hours.inWholeSeconds
+        ) {
+            age
+        }
 
         private fun createContainer(): PlexusContainer {
             val configuration = DefaultContainerConfiguration().apply {

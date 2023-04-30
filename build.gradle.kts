@@ -325,12 +325,6 @@ subprojects {
                 }
 
                 externalDocumentationLink {
-                    val baseUrl = "https://jakewharton.github.io/DiskLruCache"
-                    url.set(URI.create(baseUrl).toURL())
-                    packageListUrl.set(URI.create("$baseUrl/package-list").toURL())
-                }
-
-                externalDocumentationLink {
                     val majorVersion = log4jApiVersion.substringBefore('.')
                     val baseUrl = "https://logging.apache.org/log4j/$majorVersion.x/log4j-api/apidocs"
                     url.set(URI.create(baseUrl).toURL())

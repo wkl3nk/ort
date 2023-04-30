@@ -28,7 +28,6 @@ dependencies {
     api(libs.log4jApiKotlin)
     api(libs.semver4j)
 
-    implementation(libs.diskLruCache)
     implementation(libs.springCore)
 
     runtimeOnly(libs.xz)

@@ -23,6 +23,10 @@ plugins {
     `java-test-fixtures`
 }
 
+repositories {
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+}
+
 dependencies {
     api(project(":model"))
 
@@ -30,6 +34,7 @@ dependencies {
     implementation(project(":utils:ort-utils"))
     implementation(project(":utils:spdx-utils"))
 
+    implementation(libs.kache)
     implementation(libs.mavenCore)
 
     // TODO: Remove this once https://issues.apache.org/jira/browse/MNG-6561 is resolved.
