@@ -64,8 +64,10 @@ class OssIndex(name: String, config: OssIndexConfiguration) : AdviceProvider(nam
 
     private val service by lazy {
         OssIndexService.create(
-            url = config.serverUrl,
-            client = OkHttpClientHelper.buildClient()
+            config.serverUrl,
+            config.username,
+            config.password,
+            OkHttpClientHelper.buildClient()
         )
     }
 
