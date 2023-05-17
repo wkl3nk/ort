@@ -71,6 +71,25 @@ class OssIndex(name: String, config: OssIndexConfiguration) : AdviceProvider(nam
         )
     }
 
+    private val getComponentReport by lazy {
+        val a = if (config.username != null && config.password != null)
+            service::getAuthorizedComponentReport
+        else
+            service::getComponentReport
+
+        a
+    }
+
+    private val getComponentReport2 by lazy {
+        val a = if (config.username != null && config.password != null) {
+            service::getAuthorizedComponentReport
+        } else {
+            service::getComponentReport
+        }
+
+        a
+    }
+
     override suspend fun retrievePackageFindings(packages: Set<Package>): Map<Package, AdvisorResult> {
         val startTime = Instant.now()
 
@@ -84,7 +103,7 @@ class OssIndex(name: String, config: OssIndexConfiguration) : AdviceProvider(nam
             logger.debug { "Getting report for ${chunk.size} components (chunk ${index + 1} of ${chunks.size})." }
 
             runCatching {
-                val results = service.getComponentReport(ComponentReportRequest(chunk)).associateBy {
+                val results = getComponentReport(ComponentReportRequest(chunk)).associateBy {
                     it.coordinates
                 }
 
