@@ -87,8 +87,9 @@ class NpmTest : StringSpec({
 
             with(results[0]) {
                 packages should beEmpty()
-                issues shouldHaveSize 1
-                issues[0].severity shouldBe Severity.ERROR
+                issues shouldHaveSize 2
+                issues[0].severity shouldBe Severity.HINT
+                issues[1].severity shouldBe Severity.ERROR
             }
         } finally {
             unmockkConstructor(ProcessCapture::class)

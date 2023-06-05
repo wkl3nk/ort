@@ -21,7 +21,9 @@ package org.ossreviewtoolkit.plugins.packagemanagers.node
 
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.engine.spec.tempdir
+import io.kotest.matchers.be
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.equalityMatcher
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -63,6 +65,8 @@ class NpmFunTest : WordSpec({
             val result = create("NPM", excludedScopes = setOf("devDependencies"))
                 .resolveSingleProject(definitionFile, resolveScopes = true)
 
+            //patchActualResult(result.toYaml()) shouldBe patchExpectedResult(expectedResultFile, definitionFile)
+            //equalityMatcher(expected)
             patchActualResult(result.toYaml()) should matchExpectedResult(expectedResultFile, definitionFile)
         }
 

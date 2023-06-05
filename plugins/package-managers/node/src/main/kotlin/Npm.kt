@@ -567,6 +567,10 @@ open class Npm(
         val lines = process.stderr.lines()
         val issues = mutableListOf<Issue>()
 
+        lines.groupLines("npm notice ").mapTo(issues) {
+            Issue(source = managerName, message = it, severity = Severity.HINT)
+        }
+
         lines.groupLines("npm WARN ").mapTo(issues) {
             Issue(source = managerName, message = it, severity = Severity.WARNING)
         }
@@ -656,9 +660,8 @@ private fun List<String>.groupLines(marker: String): List<String> {
                 }
             }
 
-            if (commonPrefix !in singleLinePrefixes && commonPrefix.length >= minCommonPrefixLength) {
-                // Do not drop the whole prefix but keep the space when concatenating lines.
-                messages[messages.size - 1] += line.drop(commonPrefix.length - 1).trimEnd()
+            if (commonPrefix.isEmpty() || (commonPrefix !in singleLinePrefixes && commonPrefix.length >= minCommonPrefixLength)) {
+                messages[messages.size - 1] += " " + line.removePrefix(commonPrefix).trimEnd()
                 previousPrefix = commonPrefix
             } else {
                 // Remove the prefix from previously added message start.

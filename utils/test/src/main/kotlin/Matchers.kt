@@ -24,6 +24,7 @@ import com.github.difflib.UnifiedDiffUtils
 
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
+import io.kotest.matchers.be
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.equalityMatcher
 import io.kotest.matchers.neverNullMatcher
