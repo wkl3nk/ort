@@ -56,7 +56,7 @@ abstract class AbstractPathScannerWrapperFunTest(testTags: Set<Tag> = emptySet()
         inputDir = tempdir()
 
         // Copy our own root license under different names to a temporary directory, so we have something to operate on.
-        val ortLicense = File("../LICENSE")
+        val ortLicense = File("../../../LICENSE").canonicalFile
         commonlyDetectedFiles.forEach {
             val text = ortLicense.readText()
             inputDir.resolve(it).writeText(text.replace("license", it))

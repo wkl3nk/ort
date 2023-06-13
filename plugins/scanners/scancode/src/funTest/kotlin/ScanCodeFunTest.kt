@@ -17,7 +17,7 @@
  * License-Filename: LICENSE
  */
 
-package org.ossreviewtoolkit.scanner.scanners.scancode
+package org.ossreviewtoolkit.plugins.scanners.scancode
 
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -31,7 +31,7 @@ import org.ossreviewtoolkit.utils.ort.createOrtTempDir
 import org.ossreviewtoolkit.utils.spdx.getLicenseText
 import org.ossreviewtoolkit.utils.test.ExpensiveTag
 
-class ScanCodeScannerFunTest : AbstractPathScannerWrapperFunTest(setOf(ExpensiveTag)) {
+class ScanCodeFunTest : AbstractPathScannerWrapperFunTest(setOf(ExpensiveTag)) {
     override val scanner = ScanCode("ScanCode", scannerConfig)
 
     override val expectedFileLicenses = listOf(
