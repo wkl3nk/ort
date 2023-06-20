@@ -30,6 +30,14 @@ javaPlatform {
     allowDependencies()
 }
 
+dependencies {
+    project.subprojects.filter {
+        !it.name.endsWith("-plugin") && !it.name.endsWith("-template")
+    }.forEach {
+        api(it)
+    }
+}
+
 configure<PublishingExtension> {
     publications {
         create<MavenPublication>(name) {
