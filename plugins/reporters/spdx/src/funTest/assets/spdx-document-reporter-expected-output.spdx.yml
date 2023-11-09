@@ -1,6 +1,6 @@
 ---
 SPDXID: "SPDXRef-DOCUMENT"
-spdxVersion: "SPDX-2.2"
+spdxVersion: "SPDX-2.3"
 creationInfo:
   comment: "some creation info comment"
   created: "<REPLACE_CREATION_DATE_AND_TIME>"
@@ -49,7 +49,7 @@ packages:
     \ in source artifact"
   downloadLocation: "https://some-host/first-package.jar"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/first-package-group/first-package@0.0.1"
   filesAnalyzed: false
@@ -67,7 +67,7 @@ packages:
     \ in source artifact"
   downloadLocation: "git+ssh://github.com/path/first-package-repo.git@deadbeef#project-path"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/first-package-group/first-package@0.0.1"
   filesAnalyzed: true
@@ -95,7 +95,7 @@ packages:
     \ in source artifact"
   downloadLocation: "https://some-host/first-package-sources.jar"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/first-package-group/first-package@0.0.1"
   filesAnalyzed: false
@@ -111,7 +111,7 @@ packages:
   copyrightText: "NONE"
   downloadLocation: "NONE"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/fourth-package-group/fourth-package@0.0.1"
   filesAnalyzed: false
@@ -125,7 +125,7 @@ packages:
   copyrightText: "NONE"
   downloadLocation: "NONE"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/second-package-group/second-package@0.0.1"
   filesAnalyzed: false
@@ -139,7 +139,7 @@ packages:
   copyrightText: "Copyright 2020 Some copyright holder in source artifact"
   downloadLocation: "NONE"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/seventh-package-group/seventh-package@0.0.1"
   filesAnalyzed: false
@@ -156,7 +156,7 @@ packages:
   copyrightText: "Copyright 2020 Some copyright holder in source artifact"
   downloadLocation: "https://some-host/seventh-package-sources.jar"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/seventh-package-group/seventh-package@0.0.1"
   filesAnalyzed: true
@@ -177,7 +177,7 @@ packages:
   copyrightText: "NONE"
   downloadLocation: "NONE"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/sixth-package-group/sixth-package@0.0.1"
   filesAnalyzed: false
@@ -191,7 +191,7 @@ packages:
   copyrightText: "NONE"
   downloadLocation: "NONE"
   externalRefs:
-  - referenceCategory: "PACKAGE_MANAGER"
+  - referenceCategory: "PACKAGE-MANAGER"
     referenceType: "purl"
     referenceLocator: "pkg:maven/third-package-group/third-package@0.0.1"
   filesAnalyzed: false

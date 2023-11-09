@@ -226,9 +226,19 @@ data class SpdxRelationship(
         PROVIDED_DEPENDENCY_OF,
 
         /**
+         * Is to be used when SPDXRef-A describes, illustrates, or specifies a requirement statement for SPDXRef-B.
+         */
+        REQUIREMENT_DESCRIPTION_FOR,
+
+        /**
          * Is to be used when SPDXRef-A is a dependency required for the execution of SPDXRef-B.
          */
         RUNTIME_DEPENDENCY_OF,
+
+        /**
+         * Is to be used when SPDXRef-A describes, illustrates, or defines a design specification for SPDXRef-B.
+         */
+        SPECIFICATION_FOR,
 
         /**
          * Is to be used when SPDXRef-A statically links to SPDXRef-B.

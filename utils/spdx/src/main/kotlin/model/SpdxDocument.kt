@@ -28,13 +28,13 @@ import org.ossreviewtoolkit.utils.spdx.SpdxConstants.REF_PREFIX
 import org.ossreviewtoolkit.utils.spdx.SpdxLicense
 
 private const val SPDX_ID = "${REF_PREFIX}DOCUMENT"
-private const val SPDX_VERSION_MAJOR_MINOR = "SPDX-2.2"
+private const val SPDX_VERSION_MAJOR_MINOR = "SPDX-2.3"
 
 private val DATA_LICENSE = SpdxLicense.CC0_1_0.id
 
 /**
- * An SPDX document as specified by https://github.com/spdx/spdx-spec/tree/development/v2.2.1/chapters and
- * https://github.com/spdx/spdx-spec/blob/development/v2.2.1/examples/ in revision 947271b.
+ * An SPDX document as specified by https://spdx.github.io/spdx-spec/v2.3/ and
+ * https://github.com/spdx/spdx-spec/blob/v2.3/examples.
  */
 data class SpdxDocument(
     /**

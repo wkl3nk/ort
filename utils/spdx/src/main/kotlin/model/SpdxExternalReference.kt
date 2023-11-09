@@ -19,7 +19,9 @@
 
 package org.ossreviewtoolkit.utils.spdx.model
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -44,8 +46,7 @@ data class SpdxExternalReference(
     val referenceCategory: Category,
 
     /**
-     * The references type as specified by
-     * https://github.com/spdx/spdx-spec/blob/master/chapters/appendix-VI-external-repository-identifiers.md.
+     * The references type as specified by https://spdx.github.io/spdx-spec/v2.3/external-repository-identifiers/.
      */
     @JsonDeserialize(using = ReferenceTypeDeserializer::class)
     val referenceType: Type,
@@ -58,8 +59,15 @@ data class SpdxExternalReference(
 ) {
     enum class Category {
         SECURITY,
+
+        @JsonAlias("PACKAGE_MANAGER")
+        @JsonProperty("PACKAGE-MANAGER")
         PACKAGE_MANAGER,
+
+        @JsonAlias("PERSISTENT_ID")
+        @JsonProperty("PERSISTENT-ID")
         PERSISTENT_ID,
+
         OTHER
     }
 

@@ -31,7 +31,7 @@ following formats are supported (reporter names are case-insensitive):
   * Customizable with [Apache Freemarker](https://freemarker.apache.org/) templates
 * Opossum input that can be visualized and edited in the [OpossumUI](https://github.com/opossum-tool/opossumUI)
   (`-f Opossum`)
-* [SPDX Document](https://spdx.dev/specifications/), version 2.2 (`-f SpdxDocument`)
+* [SPDX Document](https://spdx.dev/specifications/), version 2.3 (`-f SpdxDocument`)
 * Static HTML (`-f StaticHtml`)
 * [TrustSource](https://www.trustsource.io/) JSON file (`-f TrustSource`)
   * Use this as an alternative to [ts-scan](https://github.com/TrustSource/ts-scan) for support of more build systems.
