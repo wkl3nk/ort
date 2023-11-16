@@ -184,7 +184,7 @@ class UtilsTest : WordSpec() {
         "getLicenseText provided a custom dir" should {
             "return the custom license text for a license ID not known by ort but in custom dir" {
                 val id = "LicenseRef-ort-abc"
-                val text = "a\nb\nc\n"
+                val text = "a\nb\nc"
 
                 setupTempFile(id, text)
 

@@ -130,8 +130,18 @@ fun getLicenseTextReader(
 ): (() -> String)? {
     return if (id.startsWith(LICENSE_REF_PREFIX)) {
         getLicenseTextResource(id)?.let { { it.readText() } }
-            ?: addScanCodeLicenseTextsDir(licenseTextDirectories).firstNotNullOfOrNull {
-                getLicenseTextFile(id, it)?.let { file -> { file.readText() } }
+            ?: addScanCodeLicenseTextsDir(licenseTextDirectories).firstNotNullOfOrNull { dir ->
+                getLicenseTextFile(id, dir)?.let { file ->
+                    {
+                        val lines = file.readLines()
+
+                        // Remove any YAML front matter enclosed by "---" from ScanCode license files.
+                        val licenseLines = lines.takeUnless { it.first() == "---" }
+                            ?: lines.drop(1).dropWhile { it != "---" }.drop(1)
+
+                        licenseLines.joinToString("\n").trim()
+                    }
+                }
             }
     } else {
         SpdxLicense.forId(id.removeSuffix("+"))?.let { { it.text } }
